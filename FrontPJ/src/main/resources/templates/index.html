@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Front PJ</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<div class="photo-grid">
+    <div th:each="item, itemStat : ${itemList}">
+        <div th:text="${#numbers.formatInteger(itemStat.count,2)}" class="text_bold"></div>
+        <img th:src="@{'/images/img' + ${itemStat.count} + '.png'}" alt="사진" class="photo" style="cursor: pointer">
+        <div th:if="${item.bestItem != 0}">
+            <!--            베스트상품일때-->
+            <img th:src="@{'/images/best.png'}" alt="사진">
+        </div>
+        <!--            베스트상품아닐때-->
+        <div th:unless="${item.getBestItem() != 0}">
+        </div>
+        <div th:text="${item.getProductName()}" class="text_product_name"></div>
+        <div class="product-description" th:text="${item.getDescription()}"></div>
+        <div th:if="${item.getDc() != 0}">
+            <!--            할인가 1의자리수 버림-->
+            <span th:if="${(100 - item.getDc()) * item.getPrice() * 0.01 % 10 == 0}"
+                  th:text="${#numbers.formatInteger((100 - item.getDc()) * item.getPrice() * 0.01, 3, 'COMMA')} + '원'"
+                  class="dc_price"></span>
+            <span th:unless="${(100 - item.getDc()) * item.getPrice() * 0.01 % 10 == 0}"
+                  th:text="${#numbers.formatInteger((100 - item.getDc()) * item.getPrice() * 0.01 -
+                  ((100 - item.getDc()) * item.getPrice() * 0.01 % 10), 3, 'COMMA')} + '원'"
+                  class="dc_price"></span>
+            <span th:text="${#numbers.formatInteger(item.getPrice(),3,'COMMA')} + '원'" class="price"></span>
+            <span th:text="${item.getDc()} + '%'" class="dc"></span>
+        </div>
+        <div th:unless="${item.getDc() != 0}">
+            <div th:text="${#numbers.formatInteger(item.getPrice(),3,'COMMA')} + '원'" class="dc_price"></div>
+        </div>
+    </div>
+    <div>
+        <button class="snip1535" id="send-productInfo" style="position: absolute; right:400px;">장바구니 이동</button>
+    </div>
+</div>
+
+
+<script th:inline="javascript">
+    //선택된 제품의 사진정보 저장할 배열
+    var productInfo = [];
+    function handlePhotoClick(event) {
+        var clickedPhoto = event.target;
+        console.log("clickedphoto : " + clickedPhoto);
+        console.log("clickedphoto.classList : " + clickedPhoto.classList);
+
+        if (clickedPhoto.classList.contains('selected')) { // 선택된 이미지일경우
+            clickedPhoto.classList.remove('selected');
+            var index = productInfo.findIndex(function(photo) {
+                return photo.image === clickedPhoto.getAttribute('src');
+            });
+            if (index !== -1) {
+                productInfo.splice(index, 1);
+            }
+        } else {
+            clickedPhoto.classList.add('selected'); // 새로운 이미지일경우
+            var existingIndex = productInfo.findIndex(function(photo) {
+                console.log("photo.image : "+photo.image);
+                console.log("clickedPhoto.getAttribute : " + clickedPhoto.getAttribute('src'));
+
+                return photo.image === clickedPhoto.getAttribute('src');
+            });
+
+            if (existingIndex === -1) {
+                // 선택된 이미지 정보를 배열에 추가
+                var photoInfo = {
+                    image : clickedPhoto.getAttribute('src'),
+                };
+                productInfo.push(photoInfo);
+            }
+        }
+        console.log(productInfo)
+
+    }
+
+    //클릭 이벤트 추가
+    var photos = document.getElementsByClassName('photo');
+
+    for (var i = 0; i < photos.length; i++) {
+        photos[i].addEventListener('click', handlePhotoClick);
+    }
+
+
+    function sendSelectedList() {
+        axios({
+            method: 'post',
+            url: 'http://localhost:8080/',
+            data: productInfo,
+            headers: { 'Content-Type': 'application/json' }
+        })
+            .then(function (response) {
+                console.log('productInfo 전송 완료:', response);
+
+                window.location.href =  'http://localhost:8080/products';
+            })
+            .catch(function (error) {
+                console.error('productInfo 전송 중 오류 발생:', error);
+            });
+    }
+    document.getElementById('send-productInfo').addEventListener('click', sendSelectedList);
+
+</script>
+</body>
+</html>

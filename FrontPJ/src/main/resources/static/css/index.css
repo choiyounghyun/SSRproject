@@ -1,0 +1,127 @@
+.snip1535 {
+    background-color: #c47135;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: 'BenchNine', Arial, sans-serif;
+    font-size: 1em;
+    font-size: 22px;
+    line-height: 1em;
+    margin: 15px 40px;
+    outline: none;
+    padding: 12px 40px 10px;
+    position: relative;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.snip1535:before,
+.snip1535:after {
+    border-color: transparent;
+    -webkit-transition: all 0.25s;
+    transition: all 0.25s;
+    border-style: solid;
+    border-width: 0;
+    content: "";
+    height: 24px;
+    position: absolute;
+    width: 24px;
+}
+.snip1535:before {
+    border-color: #c47135;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    right: -5px;
+    top: -5px;
+}
+.snip1535:after {
+    border-bottom-width: 2px;
+    border-color: #c47135;
+    border-left-width: 2px;
+    bottom: -5px;
+    left: -5px;
+}
+.snip1535:hover,
+.snip1535.hover {
+    background-color: #c47135;
+}
+.snip1535:hover:before,
+.snip1535.hover:before,
+.snip1535:hover:after,
+.snip1535.hover:after {
+    height: 100%;
+    width: 100%;
+}
+
+/*상품 설명 글꼴*/
+@font-face {
+    font-family: 'KoPubWorld Dotum Medium';
+    src: url("/fonts/KoPubWorld Dotum Medium.ttf");
+}
+/* 상품명 글꼴*/
+
+@font-face {
+    font-family: 'SEBANG Gothic';
+    src: url("/fonts/SEBANG Gothic.ttf");
+}
+/* 상품 넘버링, 상품 가격 글꼴 */
+@font-face {
+    font-family: 'SEBANG Gothic Bold';
+    src: url("/fonts/SEBANG Gothic Bold.ttf");
+}
+
+.product-description{
+    font-family: "KoPubWorld Dotum Medium";
+    opacity: 0.5;
+}
+
+.selected {
+    border-width: 2px;
+    border-color: darkslategray;
+    background-color: darkslategray;
+    filter: brightness(70%);
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 50px;
+    justify-items: center; /* 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    padding: 100px 250px; /* 원하는 공백 크기로 설정해주세요 */
+}
+
+.photo {
+    width: 100%;
+    height: auto;
+    border: 1px solid rgba(128, 128, 128, 0.1); /* 회색빛 투명한 실선 테두리 스타일 */
+    vertical-align: middle;
+    position: relative;
+}
+
+.text_bold{
+    font-family: "SEBANG Gothic Bold";
+    font-size: x-large;
+}
+.text_product_name{
+    font-family: "SEBANG Gothic";
+    font-size: medium;
+}
+
+.dc_price{
+    font-family: "SEBANG Gothic Bold";
+    font-size: x-large;
+}
+
+.price{
+    font-weight: bold;
+    font-size: small;
+    text-decoration: line-through;
+
+}
+
+.dc{
+    font-weight: bold;
+    font-size: small;
+    color: red;
+}

@@ -1,0 +1,47 @@
+ /*상품 설명 글꼴*/
+@font-face {
+    font-family: 'KoPubWorld Dotum Medium';
+    src: url("/fonts/KoPubWorld Dotum Medium.ttf");
+}
+/* 상품명 글꼴*/
+
+@font-face {
+    font-family: 'SEBANG Gothic';
+    src: url("/fonts/SEBANG Gothic.ttf");
+}
+/* 상품 넘버링, 상품 가격 글꼴 */
+@font-face {
+    font-family: 'SEBANG Gothic Bold';
+    src: url("/fonts/SEBANG Gothic Bold.ttf");
+}
+
+.text_bold{
+    font-family: "SEBANG Gothic Bold";
+    font-size: xx-large;
+}
+.product_text_size{
+    font-size: large;
+}
+
+.responsive-table {
+    font-family: "SEBANG Gothic";
+    font-size: large;
+    width: 100%;
+}
+.responsive-table td {
+    border: 1px solid rgba(128, 128, 128, 0.1); /* 회색빛 투명한 실선 테두리 스타일 */
+    text-align: center;
+}
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.container {
+    border: 5px solid rgba(128, 128, 128, 0.2); /* 회색빛 투명한 실선 테두리 스타일 */
+    text-align: center;
+    font-size: large;
+    /*font-weight: bold;*/
+    word-spacing: 5px;
+}

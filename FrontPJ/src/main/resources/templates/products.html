@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니 목록</title>
+    <link rel="stylesheet" th:href="@{/css/products.css}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<table class="responsive-table">
+    <colgroup>
+        <col style="width: 50%;">
+        <col style="width: 17%;">
+        <col style="width: 16%;">
+        <col style="width: 17%;">
+    </colgroup>
+    <thead>
+    <tr>
+        <th>상품명</th>
+        <th>구매가</th>
+        <th>수량</th>
+        <th>금액</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 두 번째 행 -->
+    <tr class="product_text_size" th:each="product, status : ${productList}">
+        <!--        사진 및 상품명-->
+        <td>
+            <div style="display: flex; align-items: center;">
+                <img th:src="@{'/images/' + ${product.getImage()} +'.png'}" alt="사진" class="photo">
+                <span th:text="${product.getProductName()}" style="margin-left: 10px; font-size: x-large"></span>
+            </div>
+        </td>
+        <!--        상품가격-->
+        <td class="price">
+            <div th:id="'price-' + ${status.index}" th:text="${product.getDcPrice()}+'원'" style="font-weight: bold; font-size: x-large"></div>
+            <div th:id="'price1-' + ${status.index}" th:text="${product.getPrice()}+'원'" style="text-decoration: line-through; font-size: large; margin-top: 10px; "></div>
+        </td>
+        <!--        상품갯수선택-->
+        <td>
+            <div class="center">
+                <button onclick="minus(this)" style="margin-right: 5px;">-</button>
+                <input th:id="'number-' + ${status.index}" type="number" min="1" value="1" style="width: 50px; text-align: center;">
+                <button onclick="plus(this)" style="margin-left: 5px;">+</button>
+            </div>
+        </td>
+        <!--        상품별 총 금액-->
+        <td class="price" style="font-weight: bold; font-size: x-large" th:id="'amount-' + ${status.index}" th:text="${#numbers.formatInteger(product.getDcPrice(),3,'COMMA')}+'원'"></td>
+    </tr>
+    </tbody>
+    <!--    총금액 배달비 결제 금액 -->
+    <tr class="container">
+        <td colspan="4" id="totalAmount">
+            <span>총 금액</span>
+            <span id="totalPrice" class="text_bold"></span>
+            <span style="font-size: xx-large; opacity: 0.5">+</span>
+            <span>배송비</span>
+            <span id="fee" class="text_bold"></span>
+            <span style="opacity: 0.5">(3만원이상 구매 시 무료배송)</span>
+            <span style="font-size: xx-large; opacity: 0.5">=</span>
+            <span>결제 금액</span>
+            <span id="resultPrice" class="text_bold"></span>
+        </td>
+    </tr>
+</table>
+
+<script th:inline="javascript">
+
+
+    // 아이디에 price가 포함된 요소 모두 선택, 하나는 정가, 하나는 할인가
+    var priceElements = document.querySelectorAll('.price > div[id^=price-]');
+    var price1Elements = document.querySelectorAll('.price > div[id^=price1-]');
+
+    priceElements.forEach(function(element) {
+        var priceText = element.innerText;
+        var formattedPrice = addCommasToNumber(priceText);
+        element.innerText = formattedPrice;
+    });
+
+    price1Elements.forEach(function(element) {
+        var price1Text = element.innerText;
+        var formattedPrice1 = addCommasToNumber(price1Text);
+        element.innerText = formattedPrice1;
+    });
+
+    // 1000 -> 1,000 쉼표 추가 함수
+    function addCommasToNumber(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // var modelSize = /*[[${productList.size()}]]*/ 0;
+    // console.log("모델 객체의 크기: " + modelSize);
+
+
+    var elements = document.querySelectorAll('[id*="amount"]');
+    var sum = 0;
+
+    for (var i = 0; i < elements.length; i++) {
+        var innerTextValue = elements[i].innerText;
+        console.log("innerTextValue :       " +innerTextValue);
+
+        var numericValue = parseInt(innerTextValue.replace(/[^0-9]/g, ""));
+        console.log("numericValue :     " +numericValue);
+
+        sum += numericValue;
+        console.log("sum :      "+sum);
+
+    }
+    var totalresult = sum + 3000;
+    var result1 = sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    var result2 = totalresult.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    if(sum>=30000){
+        document.getElementById("totalPrice").innerText = result1 + "원";
+        document.getElementById("fee").innerText = 0 + "원";
+        document.getElementById("resultPrice").innerText = result2+ "원";
+    }else {
+        document.getElementById("totalPrice").innerText = result1 + "원";
+        document.getElementById("fee").innerText = '3,000' + "원";
+        document.getElementById("resultPrice").innerText = result2+ "원";
+    }
+
+
+    function plus(button) {
+        var input = button.previousElementSibling;
+        var value = parseInt(input.value);
+        input.value = value + 1;
+        updateAmount(input); // input수량 + -> 금액 업데이트
+    }
+
+    function minus(button) {
+        var input = button.nextElementSibling;
+        var value = parseInt(input.value);
+        if (value > 1) {
+            input.value = value - 1;
+            updateAmount(input); // input수량 - -> 금액 업데이트
+        }
+    }
+
+    function updateAmount(input) {
+        var index = input.getAttribute("id").split("-")[1];
+        var quantityInput = document.getElementById("number-" + index);
+        var quantity = parseInt(quantityInput.value);
+        var pricePerItem = document.getElementById("price-" + index);
+        var pricePerItemNum = parseInt(pricePerItem.innerText.replace(/,/g, ""))
+
+        var totalPrice = pricePerItemNum * quantity;
+
+        var amountTd = document.getElementById("amount-" + index);
+
+
+        let result = totalPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        amountTd.innerText = result + "원";
+        total();
+    }
+
+    function total (){
+        var elements = document.querySelectorAll('[id*="amount"]');
+        var sum = 0;
+
+        for (var i = 0; i < elements.length; i++) {
+            var innerTextValue = elements[i].innerText;
+            console.log("innerTextValue :       " +innerTextValue);
+
+            var numericValue = parseInt(innerTextValue.replace(/[^0-9]/g, ""));
+            console.log("numericValue :     " +numericValue);
+
+            sum += numericValue;
+            console.log("sum :      "+sum);
+
+        }
+        totalresult = sum + 3000;
+        result1 = sum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        result2 = totalresult.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+        if(sum>=30000){
+            document.getElementById("totalPrice").innerText = result1 + "원";
+            document.getElementById("fee").innerText = 0 + "원";
+            // document.getElementById("resultPrice").innerText = result2+ "원";
+            var resultPrice = parseInt(result2.replace(/[^0-9]/g, "")) - 3000;
+            document.getElementById("resultPrice").innerText =
+                resultPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + "원";
+
+        }else {
+            document.getElementById("totalPrice").innerText = result1 + "원";
+            document.getElementById("fee").innerText = '3,000' + "원";
+            document.getElementById("resultPrice").innerText = result2+ "원";
+        }
+    }
+
+</script>
+
+</body>
+</html>
